@@ -1,7 +1,5 @@
 
-// Obter perfil do usuário logado
-// Como o middleware 'protect' já buscou e anexou o usuário a req.user,
-// só precisamos retorná-lo.
+
 exports.getUserProfile = async (req, res) => {
     // req.user foi adicionado pelo middleware 'protect'
     if (req.user) {

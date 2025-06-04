@@ -118,12 +118,3 @@ exports.loginUser = async (req, res) => {
         res.status(500).json({ message: 'Erro no servidor ao tentar fazer login.' });
     }
 };
-
-// Lembre-se que a função generateToken deve estar definida neste arquivo ou importada
-// Exemplo (se ainda não estiver em outro lugar e importada):
-// const jwt = require('jsonwebtoken');
-// const generateToken = (id) => {
-//     return jwt.sign({ id }, process.env.JWT_SECRET, {
-//         expiresIn: '30d',
-//     });
-// };
