@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { validationResult } = require('express-validator');
 
 // Função para gerar o token JWT
 const generateToken = (id) => {
@@ -12,12 +13,15 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 // @desc    Registra um novo usuário
 exports.registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
-
-  // ADICIONADO: Validação para garantir que os dados foram recebidos
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: 'Por favor, preencha todos os campos: nome, email e senha' });
+  // Verifica o resultado da validação que definimos na rota
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    // Se houver erros, retorna o status 400 com a lista de erros
+    return res.status(400).json({ errors: errors.array() });
   }
+
+  // Se não houve erros de validação, o resto do código continua normalmente...
+  const { name, email, password } = req.body;
 
   try {
     const userExists = await User.findOne({ email });
