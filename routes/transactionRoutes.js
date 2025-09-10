@@ -1,24 +1,37 @@
-
 const express = require('express');
 const router = express.Router();
-const { 
-    createTransfer, 
-    getTransactionHistory, 
-    createDeposit, 
-    createWithdrawal 
-} = require('../controllers/transactionController');
-const { protect } = require('../middleware/authMiddleware'); // Nosso middleware de proteção
+const { deposit, createTransfer, createWithdrawal, getTransactionHistory } = require('../controllers/transactionController');
+const { protect } = require('../middleware/authMiddleware');
+const { check } = require('express-validator');
 
+// Todas as rotas aqui são privadas e precisam de um token válido
+router.use(protect);
 
-router.post('/transfer', protect, createTransfer);
+// Rota de Histórico
+router.get('/my-history', getTransactionHistory);
 
+// Rota de Depósito
+router.post(
+    '/deposit', 
+    [ check('valor', 'O valor do depósito deve ser um número positivo').isFloat({ gt: 0 }) ], 
+    deposit
+);
 
-router.get('/my-history', protect, getTransactionHistory);
+// Rota de Saque
+router.post(
+    '/withdrawal',
+    [ check('valor', 'O valor do saque deve ser um número positivo').isFloat({ gt: 0 }) ],
+    createWithdrawal
+);
 
-
-router.post('/deposit', protect, createDeposit); // <-- NOVA ROTA PARA DEPÓSITO
-
-
-router.post('/withdraw', protect, createWithdrawal); // <-- NOVA ROTA PARA SAQUE
+// Rota de Transferência
+router.post(
+    '/transfer',
+    [
+        check('destinatarioEmail', 'O email do destinatário é obrigatório').isEmail(),
+        check('valor', 'O valor da transferência deve ser um número positivo').isFloat({ gt: 0 })
+    ],
+    createTransfer
+);
 
 module.exports = router;
